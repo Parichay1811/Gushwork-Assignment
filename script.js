@@ -1,10 +1,13 @@
+// Run script after DOM is fully loaded
 document.addEventListener('DOMContentLoaded', () => {
 
+  // Sticky header elements
   const stickyHeader = document.getElementById('stickyHeader');
   const hero = document.getElementById('hero');
   let lastScrollY = window.scrollY;
   let heroBottom = 0;
 
+  // Calculate bottom position of hero section
   function updateHeroBottom() {
     if (hero) {
       heroBottom = hero.offsetTop + hero.offsetHeight;
@@ -14,6 +17,7 @@ document.addEventListener('DOMContentLoaded', () => {
   updateHeroBottom();
   window.addEventListener('resize', updateHeroBottom);
 
+  // Show sticky header when scrolling down past hero section
   window.addEventListener('scroll', () => {
     const currentScrollY = window.scrollY;
     const scrollingDown = currentScrollY > lastScrollY;
@@ -27,16 +31,20 @@ document.addEventListener('DOMContentLoaded', () => {
     lastScrollY = currentScrollY;
   }, { passive: true });
 
+
+  // Mobile menu elements
   const mobileMenuBtn = document.getElementById('mobileMenuBtn');
   const mobileMenu = document.getElementById('mobileMenu');
   const stickyMobileBtn = document.getElementById('stickyMobileMenuBtn');
 
+  // Toggle mobile menu from main button
   if (mobileMenuBtn && mobileMenu) {
     mobileMenuBtn.addEventListener('click', () => {
       mobileMenu.classList.toggle('open');
     });
   }
 
+  // Close mobile menu when a link is clicked
   if (mobileMenu) {
     mobileMenu.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
@@ -45,12 +53,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  // Toggle mobile menu from sticky header button
   if (stickyMobileBtn) {
     stickyMobileBtn.addEventListener('click', () => {
       if (mobileMenu) mobileMenu.classList.toggle('open');
     });
   }
 
+
+  // Image gallery data
   const images = [
     { full: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=600&fit=crop', thumb: 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=120&h=90&fit=crop' },
     { full: 'https://images.unsplash.com/photo-1581094288338-2314dddb7ece?w=800&h=600&fit=crop', thumb: 'https://images.unsplash.com/photo-1581094288338-2314dddb7ece?w=120&h=90&fit=crop' },
@@ -65,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const imgPrev = document.getElementById('imgPrev');
   const imgNext = document.getElementById('imgNext');
 
+  // Change main image
   function switchImage(index) {
     if (index < 0) index = images.length - 1;
     if (index >= images.length) index = 0;
@@ -78,11 +90,13 @@ document.addEventListener('DOMContentLoaded', () => {
       }, 150);
     }
 
+    // Update active thumbnail
     thumbnails.forEach((thumb, i) => {
       thumb.classList.toggle('active', i === index);
     });
   }
 
+  // Thumbnail click event
   thumbnails.forEach(thumb => {
     thumb.addEventListener('click', () => {
       const index = parseInt(thumb.getAttribute('data-index'), 10);
@@ -90,53 +104,56 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  // Previous and next buttons
   if (imgPrev) imgPrev.addEventListener('click', () => switchImage(currentImageIndex - 1));
   if (imgNext) imgNext.addEventListener('click', () => switchImage(currentImageIndex + 1));
 
+
+  // Zoom elements
   const heroMainImage = document.getElementById('heroMainImage');
   const zoomLens = document.getElementById('zoomLens');
   const zoomPreview = document.getElementById('zoomPreview');
 
   if (heroMainImage && zoomLens && zoomPreview && mainImg) {
+
     const ZOOM_FACTOR = 2.5;
     const LENS_SIZE = 120;
 
+    // Move zoom lens with mouse
     heroMainImage.addEventListener('mousemove', (e) => {
       const rect = heroMainImage.getBoundingClientRect();
       const x = e.clientX - rect.left;
       const y = e.clientY - rect.top;
-      const imgW = rect.width;
-      const imgH = rect.height;
 
       let lensX = x - LENS_SIZE / 2;
       let lensY = y - LENS_SIZE / 2;
-      lensX = Math.max(0, Math.min(lensX, imgW - LENS_SIZE));
-      lensY = Math.max(0, Math.min(lensY, imgH - LENS_SIZE));
+
+      lensX = Math.max(0, Math.min(lensX, rect.width - LENS_SIZE));
+      lensY = Math.max(0, Math.min(lensY, rect.height - LENS_SIZE));
 
       zoomLens.style.left = lensX + 'px';
       zoomLens.style.top = lensY + 'px';
 
-      const bgW = imgW * ZOOM_FACTOR;
-      const bgH = imgH * ZOOM_FACTOR;
-      const bgX = -(lensX * ZOOM_FACTOR);
-      const bgY = -(lensY * ZOOM_FACTOR);
-
       zoomPreview.style.backgroundImage = `url(${mainImg.src})`;
-      zoomPreview.style.backgroundSize = `${bgW}px ${bgH}px`;
-      zoomPreview.style.backgroundPosition = `${bgX}px ${bgY}px`;
+      zoomPreview.style.backgroundSize = `${rect.width * ZOOM_FACTOR}px ${rect.height * ZOOM_FACTOR}px`;
+      zoomPreview.style.backgroundPosition = `${-(lensX * ZOOM_FACTOR)}px ${-(lensY * ZOOM_FACTOR)}px`;
     });
 
+    // Show zoom on hover
     heroMainImage.addEventListener('mouseenter', () => {
       zoomLens.classList.add('active');
       zoomPreview.classList.add('active');
     });
 
+    // Hide zoom when mouse leaves
     heroMainImage.addEventListener('mouseleave', () => {
       zoomLens.classList.remove('active');
       zoomPreview.classList.remove('active');
     });
   }
 
+
+  // FAQ accordion
   const faqItems = document.querySelectorAll('.faq__item');
 
   faqItems.forEach(item => {
@@ -159,6 +176,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+
+  // App carousel scroll
   const appCarousel = document.getElementById('appCarousel');
   const appPrev = document.getElementById('appPrev');
   const appNext = document.getElementById('appNext');
@@ -175,6 +194,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+
+  // Process step active state
   const processSteps = document.querySelectorAll('.process__step');
 
   processSteps.forEach(step => {
@@ -184,6 +205,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+
+  // Smooth scroll for anchor links
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', (e) => {
       const targetId = anchor.getAttribute('href');
@@ -199,6 +222,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+
+  // Fade-up animation using Intersection Observer
   const observerOptions = {
     threshold: 0.1,
     rootMargin: '0px 0px -40px 0px'
@@ -213,38 +238,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }, observerOptions);
 
-  document.querySelectorAll('.section-header, .features__card, .testimonials__card, .solutions__card, .resources__item, .process__detail').forEach(el => {
+  document.querySelectorAll(
+    '.section-header, .features__card, .testimonials__card, .solutions__card, .resources__item, .process__detail'
+  ).forEach(el => {
     el.classList.add('fade-up');
     observer.observe(el);
   });
-
-  const style = document.createElement('style');
-  style.textContent = `
-    .fade-up {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity 0.6s ease, transform 0.6s ease;
-    }
-    .fade-up.in-view {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .features__card.fade-up:nth-child(2) { transition-delay: 0.1s; }
-    .features__card.fade-up:nth-child(3) { transition-delay: 0.2s; }
-    .features__card.fade-up:nth-child(4) { transition-delay: 0.15s; }
-    .features__card.fade-up:nth-child(5) { transition-delay: 0.25s; }
-    .features__card.fade-up:nth-child(6) { transition-delay: 0.3s; }
-    .testimonials__card.fade-up:nth-child(2) { transition-delay: 0.1s; }
-    .testimonials__card.fade-up:nth-child(3) { transition-delay: 0.2s; }
-    .testimonials__card.fade-up:nth-child(4) { transition-delay: 0.3s; }
-    .solutions__card.fade-up:nth-child(2) { transition-delay: 0.1s; }
-    .solutions__card.fade-up:nth-child(3) { transition-delay: 0.2s; }
-    .resources__item.fade-up:nth-child(2) { transition-delay: 0.1s; }
-    .resources__item.fade-up:nth-child(3) { transition-delay: 0.2s; }
-    #mainImg {
-      transition: opacity 0.15s ease;
-    }
-  `;
-  document.head.appendChild(style);
 
 });
